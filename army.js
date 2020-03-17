@@ -1,4 +1,4 @@
-const CIVILIZATIONS = ["chinese", "english", "bizantines"];
+const CIVILIZATIONS = ["chinese", "english", "byzantine"];
 const UNITS = ["pikemen", "archers", "knights"];
 const INITIAL_DATA = {};
 const WINNERS_REWARD = 100;
@@ -77,34 +77,30 @@ class Civilization {
    * @param {String} unit // La unit a entrenar ej: piqueros
    */
   trainArmy(army, unit) {
-    try {
-      // Se valida que el ejercito tenga las monedas necesarias para el entrenamiento
-      if (this.armys[army].coins < INITIAL_DATA[unit].trainingCost) {
-        console.log(
-          `Se necesitan mas de ${INITIAL_DATA[unit].trainingCost} coins para entrenar a los ${unit}`
-        );
-        return null;
-      }
+    // Se valida que el ejercito tenga las monedas necesarias para el entrenamiento
+    if (this.armys[army].coins < INITIAL_DATA[unit].trainingCost) {
+      console.log(
+        `Se necesitan mas de ${INITIAL_DATA[unit].trainingCost} coins para entrenar a los ${unit}`
+      );
+      return null;
+    }
 
-      // Se cobran las monedas del entrenamiento
-      this.armys[army].coins -= INITIAL_DATA[unit].trainingCost;
-      this.armys[army].units[unit].strength +=
-        INITIAL_DATA[unit].trainingPoints;
+    // Se cobran las monedas del entrenamiento
+    this.armys[army].coins -= INITIAL_DATA[unit].trainingCost;
+    this.armys[army].units[unit].strength +=
+      INITIAL_DATA[unit].trainingPoints;
 
-      // Comparar el limite de transformacion con la fuerza de la unidad
-      if (
-        this.armys[army].units[unit].strength >=
-        INITIAL_DATA[unit].transformationLimit
-      ) {
-        const nextUnit = UNITS[UNITS.indexOf(unit) + 1];
-        this.armys[army].units[nextUnit].quantity += this.armys[army].units[
-          unit
-        ].quantity;
-        this.armys[army].units[unit].quantity = 0;
-        this.armys[army].units[unit].strength = 0;
-      }
-    } catch (error) {
-      console.log(error);
+    // Comparar el limite de transformacion con la fuerza de la unidad
+    if (
+      this.armys[army].units[unit].strength >=
+      INITIAL_DATA[unit].transformationLimit
+    ) {
+      const nextUnit = UNITS[UNITS.indexOf(unit) + 1];
+      this.armys[army].units[nextUnit].quantity += this.armys[army].units[
+        unit
+      ].quantity;
+      this.armys[army].units[unit].quantity = 0;
+      this.armys[army].units[unit].strength = 0;
     }
   }
 }
@@ -120,49 +116,42 @@ class Battle {
    * @return void
    */
   startBattle(civilization1, army1, civilization2, army2) {
-    try {
-      civilization1.armys[army1].record++;
-      civilization2.armys[army2].record++;
-      const winner = this.getWinningArmy(
-        civilization1.armys[army1],
-        civilization2.armys[army2]
-      );
+    civilization1.armys[army1].record++;
+    civilization2.armys[army2].record++;
+    const winner = this.getWinningArmy(
+      civilization1.armys[army1],
+      civilization2.armys[army2]
+    );
 
-      // Si no hay ganador se declara el empate para ambas civilizaciones
-      if (winner === 0) {
-        this.declareTie(civilization1, army1);
-        this.declareTie(civilization2, army2);
-      }
-
-      const winningCivilization = winner === 1 ? civilization1 : civilization2;
-      const armyGanador = winner === 1 ? army1 : army2;
-      this.rewardWinner(winningCivilization, armyGanador);
-
-      const losingCivilization = winner === 2 ? civilization1 : civilization2;
-      const losingArmy = winner === 2 ? army1 : army2;
-      this.punishLoser(losingCivilization, losingArmy);
-    } catch (error) {
-      console.log(error);
+    // Si no hay ganador se declara el empate para ambas civilizaciones
+    if (winner === 0) {
+      this.declareTie(civilization1, army1);
+      this.declareTie(civilization2, army2);
     }
+
+    const winningCivilization = winner === 1 ? civilization1 : civilization2;
+    const armyGanador = winner === 1 ? army1 : army2;
+    this.rewardWinner(winningCivilization, armyGanador);
+
+    const losingCivilization = winner === 2 ? civilization1 : civilization2;
+    const losingArmy = winner === 2 ? army1 : army2;
+    this.punishLoser(losingCivilization, losingArmy);
   }
 
   /**
-   * @desc Calcula los puntos del ejercito
-   * @param {Array} army
-   * @return {Number} / 0 si no hubo ganador 1 si ganó el ejercito 1 si ganó el ejercito 2
+   * @desc Obetiene el resultado de la batalla
+   * @param {Array} army1
+   * @param {Array} army2
+   * @return {Integer} / 0 si no hubo ganador 1 si ganó el ejercito 1 si ganó el ejercito 2
    */
   getWinningArmy(army1, army2) {
-    try {
-      let armyPoints1 = this.getArmyPoints(army1);
-      let armyPoints2 = this.getArmyPoints(army2);
+    const armyPoints1 = this.getArmyPoints(army1);
+    const armyPoints2 = this.getArmyPoints(army2);
 
-      if (armyPoints1 === armyPoints2) {
-        return 0;
-      }
-      return armyPoints1 > armyPoints2 ? 1 : 2;
-    } catch (error) {
-      console.log(error);
+    if (armyPoints1 === armyPoints2) {
+      return 0;
     }
+    return armyPoints1 > armyPoints2 ? 1 : 2;
   }
 
   /**
@@ -171,15 +160,11 @@ class Battle {
    * @return {Number}
    */
   getArmyPoints(army) {
-    try {
-      let armyPoints = 0;
-      UNITS.forEach(unit => {
-        armyPoints += army.units[unit].strength * army.units[unit].quantity;
-      });
-      return armyPoints;
-    } catch (error) {
-      console.log(error);
-    }
+    let armyPoints = 0;
+    UNITS.forEach(unit => {
+      armyPoints += army.units[unit].strength * army.units[unit].quantity;
+    });
+    return armyPoints;
   }
 
   /**
@@ -188,19 +173,14 @@ class Battle {
    * @param {Array} army
    */
   declareTie(civilization, army) {
-    try {
-      const unitsOrder = this.orderUnits(civilization.armys[army].units);
-      let cont = 0;
-      unitsOrder.forEach(unit => {
-        if (cont < UNITS_TO_LOSE_TIE) {
-          civilization.armys[army].units[unit].quantity = 0;
-        }
-        cont++;
-      });
-      return null;
-    } catch (error) {
-      console.log(error);
-    }
+    const unitsOrder = this.orderUnits(civilization.armys[army].units);
+    let cont = 0;
+    unitsOrder.forEach(unit => {
+      if (cont < UNITS_TO_LOSE_TIE) {
+        civilization.armys[army].units[unit].quantity = 0;
+      }
+      cont++;
+    });
   }
 
   /**
@@ -209,11 +189,7 @@ class Battle {
    * @param {Array} army
    */
   rewardWinner(civilization, army) {
-    try {
-      civilization.armys[army].coins += WINNERS_REWARD;
-    } catch (error) {
-      console.log(error);
-    }
+    civilization.armys[army].coins += WINNERS_REWARD;
   }
 
   /**
@@ -222,18 +198,14 @@ class Battle {
    * @param {Array} army
    */
   punishLoser(civilization, army) {
-    try {
-      const unitsOrder = this.orderUnits(civilization.armys[army].units);
-      let cont = 0;
-      unitsOrder.forEach(unit => {
-        if (cont < UNITS_TO_LOSE) {
-          civilization.armys[army].units[unit].quantity = 0;
-        }
-        cont++;
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    const unitsOrder = this.orderUnits(civilization.armys[army].units);
+    let cont = 0;
+    unitsOrder.forEach(unit => {
+      if (cont < UNITS_TO_LOSE) {
+        civilization.armys[army].units[unit].quantity = 0;
+      }
+      cont++;
+    });
   }
 
   /**
@@ -242,17 +214,13 @@ class Battle {
    * @return {Array}
    */
   orderUnits(units) {
-    try {
-      let unitsOrder = [...UNITS];
-      unitsOrder.sort(
-        (unitA, unitB) =>
-          units[unitB].quantity * units[unitB].strength -
-          units[unitA].quantity * units[unitA].strength
-      );
-      return unitsOrder;
-    } catch (error) {
-      console.log(error);
-    }
+    let unitsOrder = [...UNITS];
+    unitsOrder.sort(
+      (unitA, unitB) =>
+        units[unitB].quantity * units[unitB].strength -
+        units[unitA].quantity * units[unitA].strength
+    );
+    return unitsOrder;
   }
 }
 
@@ -260,18 +228,12 @@ class Battle {
 let civilization1 = new Civilization(CIVILIZATIONS[0]);
 
 civilization1.createArmy();
-//console.log(JSON.stringify(civilization));
-
 civilization1.createArmy();
-//console.log(civilization);
 
 let civilization2 = new Civilization(CIVILIZATIONS[1]);
-//console.log(civilization2);
-//console.log(civilization);
 
 civilization1.trainArmy(0, UNITS[1])
-//console.log(JSON.stringify(civilization));
-//console.log(JSON.stringify(civilization2));
+
 const battle = new Battle();
 battle.startBattle(civilization1, 2, civilization2, 0);
 
