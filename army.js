@@ -80,9 +80,9 @@ class Civilization {
     // Se valida que el ejercito tenga las monedas necesarias para el entrenamiento
     if (this.armys[army].coins < INITIAL_DATA[unit].trainingCost) {
       console.log(
-        `Se necesitan mas de ${INITIAL_DATA[unit].trainingCost} coins para entrenar a los ${unit}`
+        `Se necesitan ${INITIAL_DATA[unit].trainingCost} monedas para entrenar a los ${unit}`
       );
-      return null;
+      return;
     }
 
     // Se cobran las monedas del entrenamiento
@@ -130,12 +130,18 @@ class Battle {
     }
 
     const winningCivilization = winner === 1 ? civilization1 : civilization2;
-    const armyGanador = winner === 1 ? army1 : army2;
-    this.rewardWinner(winningCivilization, armyGanador);
+    const winningArmy = winner === 1 ? army1 : army2;
+    this.rewardWinner(winningCivilization, winningArmy);
 
     const losingCivilization = winner === 2 ? civilization1 : civilization2;
     const losingArmy = winner === 2 ? army1 : army2;
     this.punishLoser(losingCivilization, losingArmy);
+
+    // Muestra el resultado de la batalla
+    console.log('Civilización ganadora', winningCivilization);
+    console.log('Ejerciro ganador', winningCivilization.armys[winningArmy]);
+    console.log('Civilización perdedora', losingCivilization);
+    console.log('Ejercito perdedor', losingCivilization.armys[losingArmy]);
   }
 
   /**
@@ -236,7 +242,3 @@ civilization1.trainArmy(0, UNITS[1])
 
 const battle = new Battle();
 battle.startBattle(civilization1, 2, civilization2, 0);
-
-console.log(JSON.stringify(civilization1));
-console.log(' ')
-console.log(JSON.stringify(civilization2));
